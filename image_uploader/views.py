@@ -17,12 +17,15 @@ def upload_image(request):
     account_tier = request.user.userprofile.account_tier
     image = request.data.get('image')
 
-    # Example: Saving the uploaded image and creating thumbnails
     uploaded_image = UploadedImage.objects.create(user=request.user, image=image)
 
-    # TODO: Generate thumbnails and expiration links based on the account tier
-
+    uploaded_image.save()
     serializer = UploadedImageSerializer(uploaded_image)
+
+    # Trigger Celery task for thumbnail generation
+    for height in [200, 400]:
+        generate_thumbnail_task.apply_async(args=[uploaded_image.id, height])
+
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])

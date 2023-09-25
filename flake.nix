@@ -5,7 +5,10 @@
   outputs = { self, nixpkgs, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in {
       devShell.x86_64-linux = pkgs.mkShell {
         buildInputs = with pkgs; [
@@ -14,11 +17,12 @@
           python310Packages.black
           python310Packages.django
           python310Packages.django-rest-registration
-	        python310Packages.requests
-	        python310Packages.pillow
+          python310Packages.requests
+          python310Packages.pillow
           python310Packages.celery
           redis
-	        postman
+          sqlite
+          postman
         ];
       };
     };
